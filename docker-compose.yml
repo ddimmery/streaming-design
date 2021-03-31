@@ -2,9 +2,7 @@ version: "3.9"
 services:
   web:
     build: .
-    volumes:
-      - ./webapp:/opt/webapp
-    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+    command: gunicorn --bind 0.0.0.0:5000 design_app:app
     ports:
       - "5000:5000"
     depends_on:
