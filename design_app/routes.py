@@ -1,4 +1,4 @@
-from flask import request, render_template, make_response
+from flask import request, jsonify
 from datetime import datetime as dt
 from flask import current_app as app
 from flask_cors import cross_origin
@@ -40,15 +40,16 @@ def add_record():
     )
     db.session.add(st)
     db.session.commit()
-    return make_response(f"""
-    {str(st)}<br />
-    {str(resp)}<br />
-    {request.values}<br />
-    {covariates}<br />
-    {current_state}<br />
-    {new_state}<br /><br />
-    <a href="/test">Go to test page.</a>
-    """)
+    return jsonify({'assignment': assignment})
+
+
+@app.route('/reset')
+def reset():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+    return "Reset successful."
+
 
 @app.route('/test')
 def test_post():

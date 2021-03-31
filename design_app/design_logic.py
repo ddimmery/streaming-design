@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABCMeta
 from typing import Iterable
 import numpy as np
-import pandas as pd
 
 
 class Processor(metaclass=ABCMeta):
@@ -12,7 +11,6 @@ class Processor(metaclass=ABCMeta):
 
 class BasicProcessor(Processor):
     def process(self, cov_dict):
-        df = pd.DataFrame(cov_dict, index=[0])
         covariate_map = {
             'gender': ['Male', 'Female', 'Non-binary', 'Other'],
             'ideology': 'float',
@@ -21,10 +19,10 @@ class BasicProcessor(Processor):
         cov_array = [1.0]
         for cov, values in covariate_map.items():
             if values == 'float':
-                cov_array.append(float(df[cov].item()))
+                cov_array.append(float(cov_dict[cov]))
             elif isinstance(values, Iterable):
                 ohe = [
-                    float(val == df[cov].values.item()) 
+                    float(val == cov_dict[cov])
                     for val in values
                 ]
                 cov_array += ohe[1:len(ohe)]
@@ -58,12 +56,12 @@ class BWDRandomizer(Design):
         self.value_plus = 1 - self.q
         self.value_minus = -self.q
         self.p_upper = 2 * self.q
-    
+
     def initial_state(self):
         return {'w': [0] * self.D}
 
-    def assign(self, state, xs):
-        dot = sum(x * w for x, w in zip(xs, state['w']))
+    def assign(self, state, covariates):
+        dot = sum(x * w for x, w in zip(covariates, state['w']))
         if dot > 1.0 * self.q:
             p_i = 0.0
         elif dot < -self.q:
@@ -73,13 +71,23 @@ class BWDRandomizer(Design):
 
         if np.random.rand() < p_i:
             assignment = 1
-            new_state = {'w': [w + self.value_plus * x for w, x in zip(state['w'], xs)]}
+            new_state = {
+                'w': [
+                    w + self.value_plus * x
+                    for w, x in zip(state['w'], covariates)
+                ]
+            }
         else:
             assignment = 0
-            new_state = {'w': [w + self.value_minus * x for w, x in zip(state['w'], xs)]}
+            new_state = {
+                'w': [
+                    w + self.value_minus * x
+                    for w, x in zip(state['w'], covariates)
+                ]
+            }
         return assignment, new_state
 
-    
+
 class BasicSimple(BasicProcessor, SimpleRandomizer):
     pass
 

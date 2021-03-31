@@ -1,6 +1,7 @@
+psycopg2-binary
 numpy
-pandas
 flask
 flask_sqlalchemy
 flask_cors
 python-dotenv
+gunicorn
