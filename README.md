@@ -43,6 +43,10 @@ To use your app in Qualtrics to implement streaming experimental design, you wil
 
 Make sure that this element is added after you have collected all the covariates you wish to balance on and before you implement the "treatment" of your survey experiment.
 
+You want to put the appropriate web address of your application in the first box, then select the `POST` method and add each of your covariates as a body parameter. These should be set to be sent as `application/x-www-form-urlencoded`. To add a covariate, type the name of the covariate as defined in your `covariates.yml` file and then select that the value should be filled using `Insert Piped Text > Survey Question > <NAME OF SURVEY QUESTION> > Selected Choices Recode`.
+
+If you have a covariate that should be mapped to a continuous parameter, make sure that you set up the recoding to map responses to the desired numeric value.
+ 
 ## How to modify the setup
 
 There are a few places where you may want to modify settings to your liking.
