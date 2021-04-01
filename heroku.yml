@@ -6,6 +6,3 @@ build:
     web: Dockerfile
 run:
   web: gunicorn design_app:app --log-file=-
-  config:
-    DESIGN_NAME: bwd
-    PROCESSOR_NAME: config
