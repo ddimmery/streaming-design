@@ -1,4 +1,4 @@
-# streaming-design
+# Web Application for Streaming Experimental Design
  
 To get a working server deployed via Heroku, take the following steps:
 
@@ -35,13 +35,53 @@ git commit -m "An informative commit message!"
 git push heroku main
 ```
 
-## Update survey design with AJAX snippet
+## Update Qualtrics survey design
 
-TBD
+To use your app in Qualtrics to implement streaming experimental design, you will need to go into the "Survey Flow" mode and add [an element corresponding to a Web Service](https://www.qualtrics.com/support/survey-platform/survey-module/survey-flow/advanced-elements/web-service/#AddingAWebService). It should be set up like the following:
+
+![Using the Web Service feature in Qualtrics](qualtrics_web_service.png)
+
+Make sure that this element is added after you have collected all the covariates you wish to balance on and before you implement the "treatment" of your survey experiment.
 
 ## How to modify the setup
 
-There are a few plac
+There are a few places where you may want to modify settings to your liking.
+
+### `Dockerfile`
+
+To set how to process your data and which streaming design you want to use, you'll need to modify the lines in the `Dockerfile` which set the following two environment variables:
+
+```
+ENV DESIGN_NAME=bwd
+ENV PROCESSOR_NAME=config
+```
+
+There are currently two options for design `simple` for simple randomization and `bwd` for an algorithm which seeks linear balance on covariates.
+
+There is only one option available for processors, `config`. This requires handwriting a `YAML` file with a description of your covariates.
+
+### `covariates.yml`
+
+This file defines the levels and types of your covariates. An example using only two covariates is provided:
+
+```
+gender:
+  - Male
+  - Female
+  - Non-binary
+  - Other
+ideology: float
+```
+
+The variable `gender` is a discretely valued covariate which will be one-hot encoded with four levels. Note the indentation and the dash to indicate a list.
+
+The variable `ideology` is taken to be defined as a float, which means that it should be provided as a numeric value.
+
+With the default processor, missing values are not supported, and unexpected input may cause the app to crash.
+
+### `.env`
+
+For local development, you may need to modify the `.env` file defining how the local version of the app should be loaded.
 
 ## Development
 
