@@ -14,6 +14,6 @@ class Config:
     FLASK_ENV = environ.get('FLASK_ENV')
 
     # Database
-    SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL').replace('postgres', 'postgresql')
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
