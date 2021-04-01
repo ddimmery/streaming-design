@@ -9,7 +9,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 with app.app_context():
-    import design_app.routes
-    import design_app.data_models
+    import design_app.routes  # noqa: F401
 
     db.create_all()

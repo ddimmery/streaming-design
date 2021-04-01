@@ -5,8 +5,10 @@ from flask_cors import cross_origin
 from .data_models import db, Respondent, State
 import uuid
 import json
+from config import Config
 
-from .design_logic import BasicBWD as design_logic_cls
+from .design import design_factory
+from .processor import processor_factory
 
 
 @app.route('/', methods=['POST'])
@@ -14,19 +16,21 @@ from .design_logic import BasicBWD as design_logic_cls
 def add_record():
     """Create a user via query string parameters."""
     now = dt.now()
-    design_logic = design_logic_cls()
+    cfg = Config()
+    design = design_factory(cfg.DESIGN_NAME)()
+    processor = processor_factory(cfg.PROCESSOR_NAME)()
 
     n_state = State.query.count()
     print(n_state)
     if n_state == 0:
-        current_state = design_logic.initial_state()
+        current_state = design.initial_state()
     else:
         state_data = State.query.get(n_state)
         current_state = json.loads(state_data.state)
 
-    covariates = design_logic.process(request.values)
+    covariates = processor.process(request.values)
 
-    assignment, new_state = design_logic.assign(current_state, covariates)
+    assignment, new_state = design.assign(current_state, covariates)
     resp = Respondent(
         anonid=str(uuid.uuid4()),
         assignment=assignment,

@@ -1,0 +1,6 @@
+gender:
+  - Male
+  - Female
+  - Non-binary
+  - Other
+ideology: float
