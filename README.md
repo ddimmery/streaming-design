@@ -1,4 +1,17 @@
 # Web Application for Streaming Experimental Design
+
+## Table of Contents
+
+  * [Clone this repository](#clone-this-repository)
+  * [Install Heroku CLI](#install-heroku-cli)
+  * [Enable Heroku beta version](#enable-heroku-beta-version)
+  * [Make any changes for your application](#make-any-changes-for-your-application)
+  * [Update Qualtrics survey design](#update-qualtrics-survey-design)
+  * [How to modify the setup](#how-to-modify-the-setup)
+    + [`Dockerfile`](#dockerfile)
+    + [`covariates.yml`](#covariatesyml)
+    + [`.env`](#env)
+  * [Development](#development)
  
 To get a working server deployed via Heroku, take the following steps:
 
