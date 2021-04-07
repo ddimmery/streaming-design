@@ -40,3 +40,6 @@ class BWDRandomizer(Design):
                 ]
             }
         return assignment, new_state
+
+    def backup_assign(self, state):
+        return np.random.randint(0, 1, size=1).item()

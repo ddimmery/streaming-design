@@ -4,4 +4,5 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 ENV DESIGN_NAME=bwd
 ENV PROCESSOR_NAME=config
+ENV PYTHONUNBUFFERED=1
 COPY . .

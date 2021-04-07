@@ -9,3 +9,7 @@ class Design(metaclass=ABCMeta):
     @abstractmethod
     def assign(self, state, covariates):
         pass
+
+    @abstractmethod
+    def backup_assign(self, state):
+        pass

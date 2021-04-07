@@ -5,8 +5,9 @@ from flask_cors import cross_origin
 from .data_models import db, Respondent, State
 import uuid
 import json
-from config import Config
+import traceback
 
+from config import Config
 from .design import design_factory
 from .processor import processor_factory
 
@@ -20,6 +21,9 @@ def add_record():
     design = design_factory(cfg.DESIGN_NAME)()
     processor = processor_factory(cfg.PROCESSOR_NAME)()
 
+    uid = request.values.get('userid')
+    # check if uid has been assigned already
+
     n_state = State.query.count()
     print(n_state)
     if n_state == 0:
@@ -28,9 +32,15 @@ def add_record():
         state_data = State.query.get(n_state)
         current_state = json.loads(state_data.state)
 
-    covariates = processor.process(request.values)
+    try:
+        covariates = processor.process(request.values)
 
-    assignment, new_state = design.assign(current_state, covariates)
+        assignment, new_state = design.assign(current_state, covariates)
+    except (ValueError, KeyError, TypeError):
+        print("Terminal error, reverting to backup design.")
+        print(traceback.print_exc())
+        assignment = design.backup_assign(current_state)
+
     resp = Respondent(
         anonid=str(uuid.uuid4()),
         assignment=assignment,
@@ -76,6 +86,46 @@ def test_post():
             <option value="0">Moderate</option>
             <option value="1">Conservative</option>
             <option value="2">Very Conservative</option>
+        </select>
+    </div>
+    <div>
+        <label for="twitteruse">What is your twitter use?</label>
+        <select id="twitteruse" name="twitteruse">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+    </div>
+    <div>
+        <label for="politicaluse">What is your politicaluse?</label>
+        <select id="politicaluse" name="politicaluse">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+    </div>
+    <div>
+        <label for="seepoltweets">What is your seepoltweets?</label>
+        <select id="seepoltweets" name="seepoltweets">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+    </div>
+    <div>
+        <label for="poltweetsvideo">What is your poltweetsvideo?</label>
+        <select id="poltweetsvideo" name="poltweetsvideo">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
         </select>
     </div>
     <div>

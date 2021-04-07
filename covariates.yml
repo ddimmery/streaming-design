@@ -1,6 +1,19 @@
-gender:
-  - Male
-  - Female
-  - Non-binary
-  - Other
-ideology: float
+continuous:
+  ideology:
+    missing: null
+dummy:
+  gender:
+    - Male
+    - Female
+    - Non-binary
+    - Other
+avg:
+  twitter_experience:
+    - twitteruse
+    - politicaluse
+    - seepoltweets
+    - poltweetsvideo
+  issue_ideology:
+    - ideo_issue1
+    - ideo_issue2
+    - ideo_issue3
