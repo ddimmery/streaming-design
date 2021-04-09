@@ -7,6 +7,10 @@ class Design(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def state_keys(self):
+        pass
+
+    @abstractmethod
     def assign(self, state, covariates):
         pass
 

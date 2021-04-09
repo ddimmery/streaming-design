@@ -14,6 +14,9 @@ class BWDRandomizer(Design):
     def initial_state(self):
         return {'w': [0] * self.D}
 
+    def state_keys(self):
+        return ['w']
+
     def assign(self, state, covariates):
         dot = sum(x * w for x, w in zip(covariates, state['w']))
         if dot > 1.0 * self.q:

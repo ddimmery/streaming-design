@@ -3,13 +3,15 @@ from datetime import datetime as dt
 from flask import current_app as app
 from flask_cors import cross_origin
 from .data_models import db, Respondent, State
+from . import redis
 import uuid
 import json
 import traceback
 
 from config import Config
 from .design import design_factory
-from .processor import processor_factory
+from .processor_config import process_cfg_factory
+from .redis import update_redis, get_state_data
 
 
 @app.route('/', methods=['POST'])
@@ -19,30 +21,44 @@ def add_record():
     now = dt.now()
     cfg = Config()
     design = design_factory(cfg.DESIGN_NAME)()
-    processor = processor_factory(cfg.PROCESSOR_NAME)()
+    processor = process_cfg_factory(cfg.PROCESSOR_NAME)()
 
     uid = request.values.get('userid')
-    # check if uid has been assigned already
-
-    n_state = State.query.count()
-    print(n_state)
-    if n_state == 0:
-        current_state = design.initial_state()
+    if uid is None:
+        app.logger.warning("userid not provided.")
     else:
-        state_data = State.query.get(n_state)
-        current_state = json.loads(state_data.state)
+        uid_result = Respondent.query.get(uid)
+        if uid_result is not None:
+            return jsonify({'assignment': uid_result.assignment})
+
+    sample_size = redis.get("sample_size")
+    try:
+        sample_size = int(sample_size)
+    except TypeError:
+        sample_size = 0
+
+    if sample_size == 0:
+        current_state = design.initial_state()
+        redis.set('sample_size', 1)
+    else:
+        current_state = get_state_data(redis, design.state_keys())
+        redis.set('sample_size', sample_size + 1)
 
     try:
         covariates = processor.process(request.values)
 
         assignment, new_state = design.assign(current_state, covariates)
     except (ValueError, KeyError, TypeError):
-        print("Terminal error, reverting to backup design.")
-        print(traceback.print_exc())
+        app.logger.error(
+            "Reverting to backup design."
+        )
+        app.logger.error(traceback.print_exc())
         assignment = design.backup_assign(current_state)
+        covariates = request.values
+        new_state = current_state
 
     resp = Respondent(
-        anonid=str(uuid.uuid4()),
+        userid=uid if uid is not None else str(uuid.uuid4()),
         assignment=assignment,
         data=json.dumps(covariates),
         created=now,
@@ -54,6 +70,7 @@ def add_record():
     )
     db.session.add(st)
     db.session.commit()
+    update_redis(redis, new_state)
     return jsonify({'assignment': assignment})
 
 
@@ -62,6 +79,8 @@ def reset():
     db.drop_all()
     db.create_all()
     db.session.commit()
+    r_keys = redis.keys('*')
+    redis.delete(*r_keys)
     return "Reset successful."
 
 

@@ -18,13 +18,15 @@ class Config:
 
     # Read covariate mapping
     # The FullLoader parameter handles the conversion from YAML
-    # scalar values to Python the dictionary format
+    # scalar values to Python dictionary format
     COVARIATE_MAP = yaml.load(open(r'covariates.yml'), Loader=yaml.FullLoader)
 
-    print(COVARIATE_MAP)
     # Database
     SQLALCHEMY_DATABASE_URI = (
         environ.get('DATABASE_URL').replace('postgres:', 'postgresql:')
     )
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Redis
+    REDIS_URL = environ.get('REDIS_URL')

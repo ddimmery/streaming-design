@@ -1,12 +1,14 @@
 continuous:
   ideology:
-    missing: null
+    missing: 0
 dummy:
   gender:
-    - Male
-    - Female
-    - Non-binary
-    - Other
+    values:
+      - Male
+      - Female
+      - Non-binary
+      - Other
+    missing: 0
 avg:
   twitter_experience:
     - twitteruse

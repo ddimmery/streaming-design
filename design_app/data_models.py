@@ -33,7 +33,7 @@ class Respondent(db.Model):
         db.Integer,
         primary_key=True
     )
-    anonid = db.Column(
+    userid = db.Column(
         db.String(64),
         index=False,
         unique=True,
