@@ -6,6 +6,11 @@ from config import Config
 from .processor import processor_factory
 
 
+class DummyDict(dict):
+    def __getitem__(self, key):
+        return dict.get(self, key)
+
+
 class ProcessCFG(metaclass=ABCMeta):
     @abstractmethod
     def process(self, cov_dict):
@@ -18,7 +23,7 @@ class ProcessCFG(metaclass=ABCMeta):
 
 class YamlCFG(ProcessCFG):
     def covariate_length(self):
-        return len(self.process({}))
+        return len(self.process(DummyDict()))
 
     def process(self, cov_dict):
         defs = Config().COVARIATE_MAP
