@@ -3,12 +3,15 @@ continuous:
     missing: 0
   poltweetsideo:
     missing: 0
+  thermo_liberals:
+    missing: 0
+  thermo_conserv:
+    missing: 0
 dummy:
   gender:
     values:
       - Male
       - Female
-      - Non-binary
       - Other
     missing: 0
   twitteruse:
@@ -28,7 +31,7 @@ dummy:
     missing: 0
 avg:
   twitter_experience:
-    - twitteruse
+    - twitteruse_recode
     - politicaluse
     - seepoltweets
     - poltweetsvideo
