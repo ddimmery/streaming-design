@@ -45,6 +45,7 @@ def add_record():
         redis.set('sample_size', sample_size + 1)
 
     try:
+        print(request.values)
         covariates = processor.process(request.values)
 
         assignment, new_state = design.assign(current_state, covariates)
