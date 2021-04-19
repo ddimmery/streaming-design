@@ -8,7 +8,7 @@ from .processor import processor_factory
 
 class DummyDict(dict):
     def __getitem__(self, key):
-        return dict.get(self, key)
+        return dict.get(self, key, 0.0)
 
 
 class ProcessCFG(metaclass=ABCMeta):

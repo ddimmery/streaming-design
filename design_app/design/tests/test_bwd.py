@@ -10,7 +10,7 @@ class TestBWD(unittest.TestCase):
     def test_init(self):
         a = self.design.initial_state()
         self.assertEqual(a, {'w': [0] * 3})
-    
+
     def test_assign(self):
         state = {'w': 0}
         covs = {'a': 1, 'b': 2, 'c': 3}
