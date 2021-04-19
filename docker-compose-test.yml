@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  streaming-design-test:
+    build: .
+    container_name: "streaming-design-test"
+    command: "python3 -m unittest discover -s . -p test_*.py"
+    depends_on:
+    - db
+    - redis
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/test_data/
+    environment:
+      - POSTGRES_USER=design
+      - POSTGRES_PASSWORD=design
+      - POSTGRES_DB=design_db
+  redis:
+    image: redis:6.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - test_redis_data:/var/lib/redis/test_data/
+
+volumes:
+  test_postgres_data:
+  test_redis_data:

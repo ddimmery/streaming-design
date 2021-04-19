@@ -2,6 +2,9 @@ from abc import abstractmethod, ABCMeta
 
 
 class Design(metaclass=ABCMeta):
+    def __init__(self, D):
+        self.D = D
+
     @abstractmethod
     def initial_state(self):
         pass

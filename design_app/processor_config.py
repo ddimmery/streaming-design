@@ -11,8 +11,15 @@ class ProcessCFG(metaclass=ABCMeta):
     def process(self, cov_dict):
         pass
 
+    @abstractmethod
+    def covariate_length(self):
+        pass
+
 
 class YamlCFG(ProcessCFG):
+    def covariate_length(self):
+        return len(self.process({}))
+
     def process(self, cov_dict):
         defs = Config().COVARIATE_MAP
 

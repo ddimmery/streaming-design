@@ -4,8 +4,8 @@ from design_app.design.base import Design
 
 
 class BWDRandomizer(Design):
-    def __init__(self):
-        self.D = 5
+    def __init__(self, D=5):
+        self.D = D
         self.q = 0.5
         self.value_plus = 1 - self.q
         self.value_minus = -self.q

@@ -20,8 +20,8 @@ def add_record():
     """Create a user via query string parameters."""
     now = dt.now()
     cfg = Config()
-    design = design_factory(cfg.DESIGN_NAME)()
     processor = process_cfg_factory(cfg.PROCESSOR_NAME)()
+    design = design_factory(cfg.DESIGN_NAME)(processor.covariate_length())
 
     uid = request.values.get('userid')
     if uid is None:

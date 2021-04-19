@@ -1,5 +1,7 @@
 continuous:
-  ideology:
+  ideo_7:
+    missing: 0
+  poltweetsideo:
     missing: 0
 dummy:
   gender:
@@ -9,13 +11,29 @@ dummy:
       - Non-binary
       - Other
     missing: 0
+  twitteruse:
+    values:
+      - Almost constantly
+      - Several times a day
+      - About once a day
+      - A few days a week
+      - Every few weeks
+      - Less often
+      - Never
+    missing: 0
+  ideo_forced:
+    values:
+      - Liberal
+      - Conservative
+    missing: 0
 avg:
   twitter_experience:
     - twitteruse
     - politicaluse
     - seepoltweets
     - poltweetsvideo
-  issue_ideology:
-    - ideo_issue1
-    - ideo_issue2
-    - ideo_issue3
+  ideo_impt:
+    - ideo_impt
+    - ideo_desc
+    - ideo_wethey
+    - ideo_think
