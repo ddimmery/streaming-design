@@ -7,3 +7,4 @@ python-dotenv
 gunicorn
 pyyaml
 flask-redis
+requests

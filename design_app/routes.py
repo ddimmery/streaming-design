@@ -1,14 +1,15 @@
-from flask import request, jsonify
+from flask import request, jsonify, render_template_string
 from datetime import datetime as dt
 from flask import current_app as app
 from flask_cors import cross_origin
-from .data_models import db, Respondent, State
-from . import redis
 import uuid
 import json
+import requests
 import traceback
 
 from config import Config
+from . import redis
+from .data_models import db, Respondent, State
 from .design import design_factory
 from .processor_config import process_cfg_factory
 from .redis import update_redis, get_state_data
@@ -16,14 +17,17 @@ from .redis import update_redis, get_state_data
 
 @app.route('/', methods=['POST'])
 @cross_origin()
-def add_record():
-    """Create a user via query string parameters."""
+def add_record_api():
+    return add_record(request.values)
+
+
+def add_record(req_args):
     now = dt.now()
     cfg = Config()
     processor = process_cfg_factory(cfg.PROCESSOR_NAME)()
     design = design_factory(cfg.DESIGN_NAME)(processor.covariate_length())
 
-    uid = request.values.get('userid')
+    uid = req_args.get('userid')
     if uid is None:
         app.logger.warning("userid not provided.")
     else:
@@ -45,8 +49,8 @@ def add_record():
         redis.set('sample_size', sample_size + 1)
 
     try:
-        print(request.values)
-        covariates = processor.process(request.values)
+        app.logger.info(req_args)
+        covariates = processor.process(req_args)
 
         assignment, new_state = design.assign(current_state, covariates)
     except (ValueError, KeyError, TypeError):
@@ -55,7 +59,7 @@ def add_record():
         )
         app.logger.error(traceback.print_exc())
         assignment = design.backup_assign(current_state)
-        covariates = request.values
+        covariates = req_args
         new_state = current_state
 
     resp = Respondent(
@@ -75,81 +79,48 @@ def add_record():
     return jsonify({'assignment': assignment})
 
 
+@app.route('/', methods=["GET"])
+def dashboard():
+    return render_template_string("""
+<!doctype html>
+<html>
+<body>
+    <p><a href="{{ url_for('reset') }}">Reset the app!</a></p>
+    <p><a href="{{ url_for('test_post') }}">Send a test POST request.</a></p>
+</body>
+</html>
+    """)
+
+
 @app.route('/reset')
 def reset():
     db.drop_all()
     db.create_all()
     db.session.commit()
     r_keys = redis.keys('*')
-    redis.delete(*r_keys)
-    return "Reset successful."
+    if len(r_keys) > 0:
+        redis.delete(*r_keys)
+    return render_template_string("""
+<!doctype html>
+<html>
+<body>
+    <p>Reset Successful.</p>
+    <p><a href="{{ url_for('dashboard') }}">Return to dashboard.</a></p>
+</body>
+</html>
+    """)
 
 
 @app.route('/test')
 def test_post():
-    return """
-    <form action="/", method="POST">
-    <div>
-        <label for="gender">What gender do you identify as?</label>
-        <select id="gender" name="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Non-binary">Non-binary</option>
-            <option value="Other">Other</option>
-        </select>
-    </div>
-    <div>
-        <label for="ideology">What is your ideology?</label>
-        <select id="ideology" name="ideology">
-            <option value="-2">Very Liberal</option>
-            <option value="-1">Liberal</option>
-            <option value="0">Moderate</option>
-            <option value="1">Conservative</option>
-            <option value="2">Very Conservative</option>
-        </select>
-    </div>
-    <div>
-        <label for="twitteruse">What is your twitter use?</label>
-        <select id="twitteruse" name="twitteruse">
-            <option value="-2">-2</option>
-            <option value="-1">-1</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
-    <div>
-        <label for="politicaluse">What is your politicaluse?</label>
-        <select id="politicaluse" name="politicaluse">
-            <option value="-2">-2</option>
-            <option value="-1">-1</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
-    <div>
-        <label for="seepoltweets">What is your seepoltweets?</label>
-        <select id="seepoltweets" name="seepoltweets">
-            <option value="-2">-2</option>
-            <option value="-1">-1</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
-    <div>
-        <label for="poltweetsvideo">What is your poltweetsvideo?</label>
-        <select id="poltweetsvideo" name="poltweetsvideo">
-            <option value="-2">-2</option>
-            <option value="-1">-1</option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </div>
-    <div>
-        <button>Send POST</button>
-    </div>
-    </form>
-    """
+    # construct dict to send
+    cfg = Config()
+    processor = process_cfg_factory(cfg.PROCESSOR_NAME)()
+    cov = processor.mock_config()
+    uid = request.values.get('userid')
+    if uid is None:
+        cov['userid'] = uid
+    else:
+        cov['userid'] = str(uuid.uuid4())
+    app.logger.warning('HI THERE')
+    return add_record(cov)

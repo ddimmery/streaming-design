@@ -4,6 +4,7 @@ from typing import Iterable
 
 from config import Config
 from .processor import processor_factory
+from flask import current_app as app
 
 
 class DummyDict(dict):
@@ -19,11 +20,29 @@ class ProcessCFG(metaclass=ABCMeta):
     @abstractmethod
     def covariate_length(self):
         pass
+    
+    @abstractmethod
+    def mock_config(self):
+        pass
 
 
 class YamlCFG(ProcessCFG):
     def covariate_length(self):
         return len(self.process(DummyDict()))
+
+    def mock_config(self):
+        defs = Config().COVARIATE_MAP
+
+        covariate_vector = []
+        cov_dict = {}
+        for proc_name in defs.keys():
+            processor_cls = processor_factory(proc_name)
+            p_defs = defs[proc_name]
+            for var_name, cfg in p_defs.items():
+                cov_dict.update(processor_cls(var_name, cfg).mock_value())
+
+        return cov_dict
+            
 
     def process(self, cov_dict):
         defs = Config().COVARIATE_MAP

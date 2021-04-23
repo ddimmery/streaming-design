@@ -9,3 +9,7 @@ class Processor(metaclass=ABCMeta):
     @abstractmethod
     def process(self, cov_dict):
         pass
+
+    @abstractmethod
+    def mock_value(self):
+        pass
