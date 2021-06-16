@@ -33,7 +33,7 @@ def add_record(req_args):
     if uid is None:
         app.logger.warning("userid not provided.")
     else:
-        uid_result = Respondent.query.get(int(uid))
+        uid_result = Respondent.query.get(uid)
         if uid_result is not None:
             return jsonify({'assignment': uid_result.assignment})
 
