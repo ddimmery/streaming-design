@@ -54,7 +54,7 @@ To use your app in Qualtrics to implement streaming experimental design, you wil
 
 ![Using the Web Service feature in Qualtrics](qualtrics_web_service.png)
 
-Make sure that this element is added after you have collected all the covariates you wish to balance on and before you implement the "treatment" of your survey experiment.
+Make sure that this element is added after you have collected all the covariates you wish to balance on and before you implement the "treatment" of your survey experiment. Retrieving an assignment should take around 30ms or less, so it shouldn't need to be *much* before you implement the treatment, but to be safe (sometimes if Heroku has been inactive for a while it will "pause" the app, which will then require a little bit more time to re-load), you should try to have at least one page between the web service request and your treatment implementation.
 
 You want to put the appropriate web address of your application in the first box, then select the `POST` method and add each of your covariates as a body parameter. These should be set to be sent as `application/x-www-form-urlencoded`. To add a covariate, type the name of the covariate as defined in your `covariates.yml` file and then select that the value should be filled using `Insert Piped Text > Survey Question > <NAME OF SURVEY QUESTION> > Selected Choices Recode`.
 
