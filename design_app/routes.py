@@ -18,6 +18,7 @@ from .redis import update_redis, get_state_data
 @app.route('/', methods=['POST'])
 @cross_origin()
 def add_record_api():
+    app.logger.info(request.values)
     return add_record(request.values)
 
 
@@ -119,8 +120,5 @@ def test_post():
     cov = processor.mock_config()
     uid = request.values.get('userid')
     if uid is None:
-        cov['userid'] = uid
-    else:
         cov['userid'] = str(uuid.uuid4())
-    app.logger.warning('HI THERE')
     return add_record(cov)
