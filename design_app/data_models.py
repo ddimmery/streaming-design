@@ -45,6 +45,12 @@ class Respondent(db.Model):
         unique=False,
         nullable=False
     )
+    status = db.Column(
+        db.String(16),
+        index=False,
+        unique=False,
+        nullable=False
+    )
     created = db.Column(
         db.DateTime,
         index=False,

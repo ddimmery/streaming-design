@@ -55,10 +55,12 @@ def add_record(req_args):
         covariates = processor.process(req_args)
 
         assignment, new_state = design.assign(current_state, covariates)
+        status = "SUCCESS"
     except (ValueError, KeyError, TypeError):
         app.logger.error(
             "Reverting to backup design."
         )
+        status = "FAILED"
         app.logger.error(traceback.print_exc())
         assignment = design.backup_assign(current_state)
         covariates = req_args
@@ -68,6 +70,7 @@ def add_record(req_args):
         userid=uid if uid is not None else str(uuid.uuid4()),
         assignment=assignment,
         data=json.dumps(covariates),
+        status=status,
         created=now,
     )
     db.session.add(resp)
