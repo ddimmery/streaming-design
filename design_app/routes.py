@@ -81,7 +81,7 @@ def add_record(req_args):
     db.session.add(st)
     db.session.commit()
     update_redis(redis, new_state)
-    app.logger.info({'assignment': assignment})
+    app.logger.info({'status': status, 'assignment': assignment})
     return jsonify({'assignment': assignment})
 
 

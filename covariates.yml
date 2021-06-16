@@ -8,12 +8,6 @@ continuous:
   thermo_conserv:
     missing: 0
 dummy:
-  gender:
-    values:
-      - Male
-      - Female
-      - Other
-    missing: 0
   twitteruse:
     values:
       - Almost constantly
