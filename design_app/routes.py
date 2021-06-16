@@ -69,7 +69,7 @@ def add_record(req_args):
     resp = Respondent(
         userid=uid if uid is not None else str(uuid.uuid4()),
         assignment=assignment,
-        data=json.dumps(covariates),
+        data=json.dumps(req_args),
         status=status,
         created=now,
     )
