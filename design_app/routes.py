@@ -19,6 +19,7 @@ from .redis import update_redis, get_state_data
 @cross_origin()
 def add_record_api():
     app.logger.info(request.values)
+    print(request.values)
     return add_record(request.values)
 
 
@@ -32,7 +33,7 @@ def add_record(req_args):
     if uid is None:
         app.logger.warning("userid not provided.")
     else:
-        uid_result = Respondent.query.get(uid)
+        uid_result = Respondent.query.get(int(uid))
         if uid_result is not None:
             return jsonify({'assignment': uid_result.assignment})
 

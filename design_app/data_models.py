@@ -29,15 +29,9 @@ class Respondent(db.Model):
     """Data model for respondents."""
 
     __tablename__ = 'respondents'
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
     userid = db.Column(
         db.String(64),
-        index=False,
-        unique=True,
-        nullable=False
+        primary_key=True
     )
     assignment = db.Column(
         db.Integer,
