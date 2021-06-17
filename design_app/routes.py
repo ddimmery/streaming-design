@@ -65,7 +65,8 @@ def add_record(req_args):
         assignment = design.backup_assign(current_state)
         covariates = req_args
         new_state = current_state
-
+    app.logger.warn(req_args)
+    app.logger.warn(json.dumps(req_args))
     resp = Respondent(
         userid=uid if uid is not None else str(uuid.uuid4()),
         assignment=assignment,
